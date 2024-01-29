@@ -1,135 +1,173 @@
-// Online C++ compiler to run C++ program online
-// C++ program for addition of two polynomials 
-// using Linked Lists 
-#include <bits/stdc++.h> 
+#include <iostream>
+#include <stdlib.h>
 using namespace std; 
 
-// Node structure containing power and coefficient of 
-// variable 
 struct Node { 
 	int coeff; 
-	int pow; 
+	int expo; 
 	struct Node* next; 
 }; 
+typedef struct Node node;
 
-// Function to create new node 
-void create_node(int x, int y, struct Node** temp) 
-{ 
-	struct Node *r, *z; 
-	z = *temp; 
-	if (z == NULL) { 
-		r = (struct Node*)malloc(sizeof(struct Node)); 
-		r->coeff = x; 
-		r->pow = y; 
-		*temp = r; 
-		r->next = (struct Node*)malloc(sizeof(struct Node)); 
-		r = r->next; 
-		r->next = NULL; 
-	} 
-	else { 
-		r->coeff = x; 
-		r->pow = y; 
-		r->next = (struct Node*)malloc(sizeof(struct Node)); 
-		r = r->next; 
-		r->next = NULL; 
-	} 
-} 
+node * create(node *start){
+    int n, i, a, b;
+    node *temp, *ptr;
+    
+    cout<<"enter the number of terms: ";
+    cin>>n;
+    for(int i = 1; i<=n; i++){
+        cout<<"enter the coefficient: ";
+        cin>>a;
+        cout<<"enter the power: ";
+        cin>>b;
+        
+        temp = (node *)malloc(sizeof(node));
+        temp->coeff = a;
+        temp->expo = b;
+        
+        if(start == NULL || b>start->expo){
+            temp->next = start;
+            start = temp;
+        }
+        
+        else{
+            ptr = start;
+            while(ptr->next != NULL && ptr->next->expo>=b )
+                ptr = ptr->next;
+            
+            temp->next = ptr->next;
+            ptr->next = temp;
+        }
+    }
+    
+    return start;
+}
 
-// Function Adding two polynomial numbers 
-void polyadd(struct Node* poly1, struct Node* poly2, 
-			struct Node* poly) 
-{ 
-	while (poly1->next && poly2->next) { 
-		// If power of 1st polynomial is greater then 2nd, 
-		// then store 1st as it is and move its pointer 
-		if (poly1->pow > poly2->pow) { 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff; 
-			poly1 = poly1->next; 
-		} 
+void display(node *start){
+    if(start == NULL){
+        cout<<"nothing to display"<<endl;
+        return;
+    }
+    
+    do{
+        cout<<"+("<<start->coeff<<")"<<"x^"<<start->expo;
+        start = start->next;
+    }while(start != NULL);
+    cout<<endl;
+}
 
-		// If power of 2nd polynomial is greater then 1st, 
-		// then store 2nd as it is and move its pointer 
-		else if (poly1->pow < poly2->pow) { 
-			poly->pow = poly2->pow; 
-			poly->coeff = poly2->coeff; 
-			poly2 = poly2->next; 
-		} 
+void polyAdd(node *p, node *q){
+    node *start = NULL, *temp, *ptr;
+    while(p != NULL && q != NULL){
+        if(p->expo > q->expo){
+            temp = (node *)malloc(sizeof(node));
+            temp->coeff = p->coeff;
+            temp->expo = p->expo;
+            temp->next = NULL;
+            
+            if(start == NULL)
+                start = temp;
+            else{
+                ptr = start;
+                while(ptr->next != NULL)
+                    ptr = ptr->next;
+                ptr->next = temp;
+            }
+            
+            p = p->next;
+        }
+        
+        else if(p->expo < q->expo){
+            temp = (node *)malloc(sizeof(node));
+            temp->coeff = q->coeff;
+            temp->expo = q->expo;
+            temp->next = NULL;
+            
+            if(start == NULL)
+                start = temp;
+            else{
+                ptr = start;
+                while(ptr->next != NULL)
+                    ptr = ptr->next;
+                
+                ptr->next = temp;
+            }
+            
+            q = q->next;
+        }
+        
+        else if(p->expo == q->expo){
+            temp = (node *)malloc(sizeof(node));
+            temp->coeff = p->coeff + q->coeff;
+            temp->expo = p->expo;
+            temp->next = NULL;
+            
+            if(start == NULL)
+                start = temp;
+            else{
+                ptr = start;
+                while(ptr->next != NULL)
+                    ptr = ptr->next;
+                
+                ptr->next = temp;
+            }
+            
+            p = p->next;
+            q = q->next;
+        }
+    }
+    
+    while(p != NULL){
+        temp = (node *)malloc(sizeof(node));
+        temp->expo = p->expo;
+        temp->coeff = p->coeff;
+        temp->next = NULL;
+            
+        if(start == NULL)
+            start = temp;
+        else{
+            ptr = start;
+            while(ptr->next != NULL)
+                ptr = ptr->next;
+                
+            ptr->next = temp;
+        }
+            
+        p = p->next;
+    }
+        
+    while(q != NULL){
+        temp = (node *)malloc(sizeof(node));
+        temp->expo = q->expo;
+        temp->coeff = q->coeff;
+        temp->next = NULL;
+            
+        if(start == NULL)
+           start = temp;
+        else{
+            ptr = start;
+            while(ptr->next != NULL)
+                ptr = ptr->next;
+            
+            ptr->next = temp;
+        }
+            
+        q = q->next;
+    }
+    
+    display(start);
+}
 
-		// If power of both polynomial numbers is same then 
-		// add their coefficients 
-		else { 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff + poly2->coeff; 
-			poly1 = poly1->next; 
-			poly2 = poly2->next; 
-		} 
-
-		// Dynamically create new node 
-		poly->next 
-			= (struct Node*)malloc(sizeof(struct Node)); 
-		poly = poly->next; 
-		poly->next = NULL; 
-	} 
-	while (poly1->next || poly2->next) { 
-		if (poly1->next) { 
-			poly->pow = poly1->pow; 
-			poly->coeff = poly1->coeff; 
-			poly1 = poly1->next; 
-		} 
-		if (poly2->next) { 
-			poly->pow = poly2->pow; 
-			poly->coeff = poly2->coeff; 
-			poly2 = poly2->next; 
-		} 
-		poly->next 
-			= (struct Node*)malloc(sizeof(struct Node)); 
-		poly = poly->next; 
-		poly->next = NULL; 
-	} 
-} 
-
-// Display Linked list 
-void show(struct Node* node) 
-{ 
-	while (node->next != NULL) { 
-		printf("%dx^%d", node->coeff, node->pow); 
-		node = node->next; 
-		if (node->coeff >= 0) { 
-			if (node->next != NULL) 
-				printf("+"); 
-		} 
-	} 
-} 
-
-// Driver code 
-int main() 
-{ 
-	struct Node *poly1 = NULL, *poly2 = NULL, *poly = NULL; 
-
-	// Create first list of 5x^2 + 4x^1 + 2x^0 
-	create_node(5, 2, &poly1); 
-	create_node(4, 1, &poly1); 
-	create_node(2, 0, &poly1); 
-
-	// Create second list of -5x^1 - 5x^0 
-	create_node(-5, 1, &poly2); 
-	create_node(-5, 0, &poly2); 
-
-	printf("1st Number: "); 
-	show(poly1); 
-
-	printf("\n2nd Number: "); 
-	show(poly2); 
-
-	poly = (struct Node*)malloc(sizeof(struct Node)); 
-
-	// Function add two polynomial numbers 
-	polyadd(poly1, poly2, poly); 
-
-	// Display resultant List 
-	printf("\nAdded polynomial: "); 
-	show(poly); 
-
-	return 0; 
+int main(){
+    node *poly1 = NULL, *poly2 = NULL;
+    cout<<"enter 1st polynomial: "<<endl;
+    poly1 = create(poly1);
+    cout<<"enter 2nd polynomial: "<<endl;
+    poly2 = create(poly2);
+    
+    display(poly1);
+    display(poly2);
+    cout<<"result: ";
+    polyAdd(poly1, poly2);
+    return 0;
 }
