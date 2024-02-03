@@ -6,9 +6,9 @@ void max_heapify(int a[], int n, int m){
     int r = 2*m + 2;
     int largest = m;
     
-    if(l<n && a[largest] < a[l])    
+    if(l<n && a[largest] < a[l])    // a[largest] > a[l]      for getting descending order
         largest = l;
-    if(r<n && a[largest] < a[r])
+    if(r<n && a[largest] < a[r])    //a[largest] > a[r]        for getting descending order
         largest = r;
     
     if(largest != m){
